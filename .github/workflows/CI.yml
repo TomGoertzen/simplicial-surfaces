@@ -10,7 +10,7 @@ jobs:
   tex4ht:
     name: htlatex-test
     runs-on: ubuntu-latest
-     steps:
+    steps:
       - run: sudo apt-get update
       - run: sudo apt-get install sed texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-extra-utils texlive-fonts-recommended texlive-fonts-extra tex4ht 
       - uses: actions/checkout@v2
