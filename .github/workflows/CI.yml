@@ -6,7 +6,8 @@ on:
   - pull_request
 
 jobs:
-  htlatex:
+
+  tex4ht:
     name: htlatex-test
     runs-on: ubuntu-latest
      steps:
