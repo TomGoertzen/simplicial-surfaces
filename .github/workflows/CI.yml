@@ -6,6 +6,20 @@ on:
   - pull_request
 
 jobs:
+  htlatex:
+    name: htlatex-test
+    runs-on: ubuntu-latest
+     steps:
+      - run: sudo apt-get update
+      - run: sudo apt-get install sed texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-extra-utils texlive-fonts-recommended texlive-fonts-extra tex4ht 
+      - uses: actions/checkout@v2
+      - run: htlatex 
+      - name: 'Upload picture'
+        uses: actions/upload-artifact@v2
+        with:
+          name: picture
+          path: ./TestImage-1.svg   
+
   # The CI test job
   test:
     name: ${{ matrix.gap-branch }} ${{ matrix.ABI }}
