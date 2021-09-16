@@ -7,20 +7,7 @@ on:
 
 jobs:
 
-  tex4ht:
-    name: htlatex-test
-    runs-on: ubuntu-latest
-    steps:
-      - run: sudo apt-get update
-      - run: sudo apt-get install sed texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-extra-utils texlive-fonts-recommended texlive-fonts-extra tex4ht 
-      - uses: actions/checkout@v2
-      - run: htlatex 
-      - name: 'Upload picture'
-        uses: actions/upload-artifact@v2
-        with:
-          name: picture
-          path: ./TestImage-1.svg   
-          if-no-files-found: error
+  
 
   # The CI test job
   test:
@@ -62,16 +49,16 @@ jobs:
 
     steps:
       - run: sudo apt-get update
-      - run: sudo apt-get install sed texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-extra-utils texlive-fonts-recommended texlive-fonts-extra tex4ht 
+      # - run: sudo apt-get install sed texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-extra-utils texlive-fonts-recommended texlive-fonts-extra tex4ht 
       - uses: actions/checkout@v2
       - uses: gap-actions/setup-gap@v2
         with:
           GAP_PKGS_TO_BUILD: "io profiling AttributeScheduler grape datastructures orb digraphs NautyTracesInterface"
           GAP_PKGS_TO_CLONE: "sebasguts/AttributeScheduler.git gap-packages/NautyTracesInterface.git"
-          GAPBRANCH: ${{ matrix.gap-branch }}
-          ABI: ${{ matrix.ABI }}
+         # GAPBRANCH: ${{ matrix.gap-branch }}
+         # ABI: ${{ matrix.ABI }}
       - uses: gap-actions/build-pkg@v1
-      - run: cd flatex && ./autogen.sh && ./configure && make && cd -
+      # - run: cd flatex && ./autogen.sh && ./configure && make && cd -
       - run: /home/runner/gap/bin/gap.sh -l '/home/runner/work/simplicial-surfaces/simplicial-surfaces/gaproot;' --quitonbreak makedoc.g
       - name: 'Upload documentation'
         uses: actions/upload-artifact@v2
