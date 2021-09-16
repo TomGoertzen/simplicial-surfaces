@@ -20,6 +20,7 @@ jobs:
         with:
           name: picture
           path: ./TestImage-1.svg   
+          if-no-files-found: error
 
   # The CI test job
   test:
