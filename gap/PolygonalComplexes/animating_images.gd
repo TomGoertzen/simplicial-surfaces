@@ -110,16 +110,3 @@ DrawSurfaceToJavaScript(oct, "doc/Octahedron_NormalesOfInnerCircle.html", printR
 #! Octahedron_NormalesOfInnerCircle.html
 #! </Alt>
 #! @EndChunk
-
-
-##! @BeginChunk Example_OctahedronNormalesOfInnerCircleWithoutFaces
-#oct := Octahedron();;
-#verticesPositions := [ [ 0, 0, Sqrt(2.) ],[ 1, 1, 0 ],[ 1, -1, 0 ],[ -1, -1, 0 ],[ -1, 1, 0 ],[ 0, 0, -Sqrt(2.) ] ];;
-#printRecord := SetVertexCoordiantes3D(oct, verticesPositions, rec());;
-#printRecord := ActivateNormalOfInnerCircles(oct,printRecord);;
-#printRecord := DeactivateFaces(oct,printRecord);;
-#DrawSurfaceToJavaScript(oct, "doc/Octahedron_NormalesOfInnerCircleWithoutFaces.html", printRecord);;
-##! <Alt Only="JavaScript">
-##! Octahedron_NormalesOfInnerCircleWithoutFaces.html
-##! </Alt>
-##! @EndChunk
