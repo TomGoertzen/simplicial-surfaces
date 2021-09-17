@@ -50,7 +50,7 @@ preProcessTikz := function( node )
 
         # get the content of the tag
         cont := GetTextXMLTree(node);
-
+        Print("DEBUG ",node.name,"\n");
 
         # We want to save our image in the file
         # _IMAGE_<Hash>.tex
@@ -77,7 +77,7 @@ preProcessTikz := function( node )
         # 6) Compile this image via htlatex _IMAGE_<Hash>.tex
         # 7) Store the name _IMAGE_<Hash> in our list
         # 8) Include _IMAGE_<Hash>-1.svg in the HTML document
-
+        Print("DEBUG start with step 1 \n");
         # Step 1
         path := __SIMPLICIAL_DocDirectory;
         tmpImageName := "_IMAGE_TMP";
@@ -94,19 +94,20 @@ preProcessTikz := function( node )
         AppendTo( output, cont );
         AppendTo( output, "\\end{document}" );
         CloseStream(output);
-
+        
+        
         # Now we remove the leading whitespace
         Exec( "sh -c \" cd ", path, 
             "; sed 's/^[ \\t]*//g' -i ", 
             Concatenation(tmpImageName, ".tex"), "; \"" );
-
+        Print("DEBUG start with step 2 \n");
         # Step 2
         # TODO separate the calls to these shell-files into a function and call
         # that. Furthermore, add into the README a short test if a user has all
         # necessary capabilities (and maybe an installation for them)
         Exec( "sh -c \" cd ", path, "; ../flatex/flatex ", 
             Concatenation(tmpImageName, ".tex"), "> /dev/null; \"" );
-
+        Print("DEBUG start with step 3 \n");
         # Step 3
         sysDirPath := DirectoriesSystemPrograms();
         md5 := Filename( sysDirPath, "md5sum" );
@@ -121,9 +122,10 @@ preProcessTikz := function( node )
         CloseStream(inStream);
         CloseStream(outStream);
         hash := SplitString( out, " " )[1];
-
+        Print("DEBUG start with step 4 \n");
         # Step 4
         name := Concatenation( "_IMAGE_", hash );
+        Print("DEBUG ",name,"\n");
         if not IsExistingFile( 
             Filename( DirectoryCurrent(), 
                 Concatenation( path, name, ".tex" ) ) ) or
@@ -134,10 +136,10 @@ preProcessTikz := function( node )
             Filename( DirectoryCurrent(),
                 Concatenation( path, name, ".pdf" )) ) then
             # Either tex or svg or pdf are not there. We will write them now.
-
+            Print("DEBUG start with step 5 \n");
             # Step 5
             Exec( "sh -c \" cd ", path, "; mv _IMAGE_TMP.tex ", Concatenation(name, ".tex"), "; \" " );
-
+            Print("DEBUG start with step 6 \n");
             # Step 6
             Exec( "sh -c \" cd ", path, "; pdflatex -halt-on-error ", Concatenation(name, ".tex"), "; \" " );
             Exec( "sh -c \" cd ", path, "; htlatex ", Concatenation(name, ".tex"), "; \" " );
@@ -158,10 +160,10 @@ preProcessTikz := function( node )
                 # I do not really understand why there has to be so much
                 # escaping but it does not work with less.
         fi;
-            
+        Print("DEBUG start with step 7 \n");    
         # Step 7
         Add( __SIMPLICIAL_ImageNames, name);
-
+        Print("DEBUG start with step 8 \n");
         # Step 8 will be done in the htmlString below
        
 
@@ -194,6 +196,7 @@ preProcessTikz := function( node )
         # Replace this node by the new nodes
         node.content := [n1,n2,n3];
         node.attributes.Only := "HTML,LaTeX,Text";
+        Print("DEBUG Done \n");
     fi;
 end;
 
@@ -204,12 +207,13 @@ end;
 # For that we define a function that changes one node 
 preProcessJavaScript := function( node )
    	 local cont, name, path, n1, n2, n3, consoleString, htmlString, latexString, tmpImageName, tmpName;
-
+    
    	if node.name = "Alt" and IsBound(node.attributes.Only) and 
         node.attributes.Only in ["JavaScript","Javascript"] then
-
+            
        		# get the content of the tag (we need to remove whitespaces)
         	cont := GetTextXMLTree(node);
+        	Print("DEBUG", cont," \n");
 		cont := ReplacedString( cont, " ", "" ); 
 		cont := ReplacedString( cont, "\n", "" ); 
 		cont := ReplacedString( cont, ".html", "" ); 
@@ -223,7 +227,9 @@ preProcessJavaScript := function( node )
 		AppendTo( "doc/Test.js", Concatenation("page.render('doc/", cont, ".png');\n") );
 		AppendTo( "doc/Test.js", "phantom.exit();\n" );
 		AppendTo( "doc/Test.js", "});" );
+		Print("DEBUG start phantomjs /doc/Test.js \n");
 		Exec("./doc/phantomjs /doc/Test.js");
+		Print("DEBUG finish phantomjs /doc/Test.js \n");
 		name := cont;
 
 
@@ -235,6 +241,7 @@ preProcessJavaScript := function( node )
 
         	# Inclusion in the LaTeX-version is centered
         	latexString := Concatenation( "\n\\begin{center}\n", "\\includegraphics{", name, ".png}\n\\end{center}\n" );
+        	Print("DEBUG ParseTree latexString \n");
         	n1 := ParseTreeXMLString(latexString);
         	n1.name := "Alt";
         	n1.attributes.Only := "LaTeX";
@@ -244,6 +251,8 @@ preProcessJavaScript := function( node )
             	"<Alt Only=\"HTML\"><![CDATA[",
             	"<p style=\"text-align:center;\"><img src=\"", name, "-1.png\"",
             	"alt=\"", name, "\"/></p>]]></Alt>");
+            Print("DEBUG ParseTree htmlString \n");
+
         	n2 := ParseTreeXMLString(htmlString);
         	n2.name := "Alt";
         	n2.attributes.Only := "HTML";
@@ -251,6 +260,8 @@ preProcessJavaScript := function( node )
 
         	# Generate the text version
         	consoleString := "\n[an image that is not shown in text version]\n";
+        	Print("DEBUG ParseTree consoleString \n");
+
         	n3 := ParseTreeXMLString(consoleString);
         	n3.name := "Alt";
         	n3.attributes.Only := "Text";
@@ -259,7 +270,7 @@ preProcessJavaScript := function( node )
         	# Replace this node by the new nodes
         	node.content := [n1,n2,n3];
         	node.attributes.Only := "HTML,LaTeX,Text";
-
+            Print("DEBUG Finish node \n");
 	fi;
 end;
 
@@ -267,7 +278,7 @@ end;
 
 BindGlobal( "CleanImageDirectory", function(  )
     local allFiles, file;
-
+    Print("DEBUG Start Clean Image \n");
     # First we remove the temporary files
     Exec( "sh -c \" cd ", __SIMPLICIAL_DocDirectory, "; rm --force _IMAGE_TMP*;\"" );
 
@@ -288,6 +299,7 @@ BindGlobal( "CleanImageDirectory", function(  )
             fi;
         fi;
     od;
+    Print("DEBUG Finish Clean Image \n");
 end 
 );
 
@@ -344,8 +356,10 @@ BindGlobal("MakeGAPDocDoc", function(arg)
         Read("gap/ColouredComplexes/isoscelesColouring_images.gd");
         Read("gap/Flags/flags_images.gd");
         __SIMPLICIAL_MANUAL_MODE := false;
+        Print("DEBUG Start to parse the tree \n");
         # Fortunately there already is a method to apply this function to all nodes of the tree
         ApplyToNodesParseTree( r, preProcessTikz );
+        Print("DEBUG finish parse tree \n");
 	ApplyToNodesParseTree( r, preProcessJavaScript );
 
         CleanImageDirectory();
